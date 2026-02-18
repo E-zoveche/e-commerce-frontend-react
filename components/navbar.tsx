@@ -3,9 +3,11 @@
 import Link from "next/link"
 import { ShoppingBag, Search, Menu, X } from "lucide-react"
 import { useState } from "react"
+import { useCart } from "@/context/CartContext"
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const { cartItems } = useCart()
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/40">
@@ -39,12 +41,14 @@ export function Navbar() {
           <button className="p-2 hover:bg-muted transition-colors">
             <Search size={20} strokeWidth={1.5} />
           </button>
-          <button className="p-2 hover:bg-muted transition-colors relative">
+          <Link href="/cart" className="p-2 hover:bg-muted transition-colors relative">
             <ShoppingBag size={20} strokeWidth={1.5} />
-            <span className="absolute top-1 right-1 bg-accent text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full leading-none">
-              0
-            </span>
-          </button>
+            {cartItems.length > 0 && (
+              <span className="absolute top-1 right-1 bg-accent text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full leading-none">
+                {cartItems.length}
+              </span>
+            )}
+          </Link>
           <Link
             href="/appointment"
             className="hidden md:block px-6 py-2 border border-primary text-[10px] uppercase tracking-[0.2em] hover:bg-primary hover:text-white transition-all duration-300"

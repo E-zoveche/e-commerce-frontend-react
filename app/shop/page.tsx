@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Search, SlidersHorizontal, ShoppingBag, X } from 'lucide-react';
+import { Search, SlidersHorizontal, ShoppingBag } from 'lucide-react';
+import { useCart } from '@/context/CartContext';
 
 interface Product {
   id: number;
@@ -14,24 +15,27 @@ interface Product {
 }
 
 const products: Product[] = [
-  { id: 1, name: 'Cashmere Crew Neck', collection: 'Essential Knits', price: 485, color: 'Cream', image: '/c6.jpg' },
-  { id: 2, name: 'Silk Blend Tank', collection: 'Essential Knits', price: 350, color: 'Charcoal', image: '/c1.jpg' },
-  { id: 3, name: 'Oversized Blazer', collection: 'Essential Knits', price: 890, color: 'Cream', image: '/c8.jpg' },
-  { id: 4, name: 'Evening Gown', collection: 'The Evening Suite', price: 2400, color: 'Black', image: '/c9.jpg' },
-  { id: 5, name: 'Silk Camisole', collection: 'Architectural Silk', price: 650, color: 'Ivory', image: '/c10.jpg' },
-  { id: 6, name: 'Architectural Jacket', collection: 'Architectural Silk', price: 1200, color: 'Taupe', image: '/c3.jpg' },
-  { id: 7, name: 'Evening Gown', collection: 'The Evening Suite', price: 2400, color: 'Black', image: '/c4.jpg' },
-  { id: 8, name: 'Silk Camisole', collection: 'Architectural Silk', price: 650, color: 'Ivory', image: '/c5.jpg' },
-  { id: 9, name: 'Architectural Jacket', collection: 'Architectural Silk', price: 1200, color: 'Taupe', image: '/c12.jpg' },
-  { id: 10, name: 'Evening Gown', collection: 'The Evening Suite', price: 2400, color: 'Black', image: '/c14.jpg' },
-  { id: 11, name: 'Silk Camisole', collection: 'Architectural Silk', price: 650, color: 'Ivory', image: '/c7.png' },
-  { id: 12, name: 'Architectural Jacket', collection: 'Architectural Silk', price: 1200, color: 'Taupe', image: '/c2.jpg' }
+  { id: 1, name: 'Cashmere Crew Neck', collection: 'Essential Knits', price: 485, color: 'Cream', image: '/c1.jpg' },
+  { id: 2, name: 'Silk Blend Tank', collection: 'Essential Knits', price: 350, color: 'Charcoal', image: '/c2.jpg' },
+  { id: 3, name: 'Oversized Blazer', collection: 'Essential Knits', price: 890, color: 'Cream', image: '/c3.jpg' },
+  { id: 4, name: 'Evening Gown', collection: 'The Evening Suite', price: 2400, color: 'Black', image: '/c4.jpg' },
+  { id: 5, name: 'Silk Camisole', collection: 'Architectural Silk', price: 650, color: 'Ivory', image: '/c5.jpg' },
+  { id: 6, name: 'Architectural Jacket', collection: 'Architectural Silk', price: 1200, color: 'Taupe', image: '/c6.jpg' },
+  { id: 7, name: 'Evening Gown', collection: 'The Evening Suite', price: 2400, color: 'Black', image: '/c7.png' },
+  { id: 8, name: 'Silk Camisole', collection: 'Architectural Silk', price: 650, color: 'Ivory', image: '/c8.jpg' },
+  { id: 9, name: 'Architectural Jacket', collection: 'Architectural Silk', price: 1200, color: 'Taupe', image: '/c9.jpg' },
+  { id: 10, name: 'Evening Gown', collection: 'The Evening Suite', price: 2400, color: 'Black', image: '/c10.jpg' },
+  { id: 11, name: 'Silk Camisole', collection: 'Architectural Silk', price: 650, color: 'Ivory', image: '/c11.jpg' },
+  { id: 12, name: 'Architectural Jacket', collection: 'Architectural Silk', price: 1200, color: 'Taupe', image: '/c12.jpg' },
+  { id: 13, name: 'Evening Gown', collection: 'The Evening Suite', price: 2400, color: 'Black', image: '/c13.jpg' },
+  { id: 14, name: 'Silk Camisole', collection: 'Architectural Silk', price: 650, color: 'Ivory', image: '/c14.jpg' },
+  { id: 15, name: 'Architectural Jacket', collection: 'Architectural Silk', price: 1200, color: 'Taupe', image: '/c15.jpg' },
 ];
 
 export default function ShopPage() {
   const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [cart, setCart] = useState<number[]>([]);
+  const { addToCart, cartItems } = useCart();
 
   const filteredProducts = products.filter(product => {
     const matchesCollection = !selectedFilter || product.collection === selectedFilter;
@@ -39,8 +43,16 @@ export default function ShopPage() {
     return matchesCollection && matchesSearch;
   });
 
-  const addToCart = (productId: number) => {
-    setCart([...cart, productId]);
+  const handleAddToCart = (product: Product) => {
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      color: product.color,
+      image: product.image,
+      collection: product.collection,
+      quantity: 1,
+    });
   };
 
   return (
@@ -130,7 +142,7 @@ export default function ShopPage() {
                     <p className="font-medium text-foreground">${product.price}</p>
                   </div>
                   <button
-                    onClick={() => addToCart(product.id)}
+                    onClick={() => handleAddToCart(product)}
                     className="bg-accent text-background p-3 hover:bg-accent/90 transition-colors"
                   >
                     <ShoppingBag className="w-5 h-5" />
@@ -149,10 +161,11 @@ export default function ShopPage() {
       </section>
 
       {/* Cart Indicator */}
-      {cart.length > 0 && (
-        <div className="fixed bottom-6 right-6 bg-accent text-background px-6 py-3 rounded-full shadow-lg">
-          <span className="font-medium">{cart.length} items in cart</span>
-        </div>
+      {cartItems.length > 0 && (
+        <Link href="/cart" className="fixed bottom-6 right-6 bg-accent text-background px-6 py-3 rounded-full shadow-lg hover:bg-accent/90 transition-colors flex items-center gap-2">
+          <ShoppingBag className="w-5 h-5" />
+          <span className="font-medium">{cartItems.length} items in cart</span>
+        </Link>
       )}
     </main>
   );

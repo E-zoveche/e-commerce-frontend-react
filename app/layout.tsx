@@ -2,6 +2,9 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Geist, Playfair_Display } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
+import { CartProvider } from "@/context/CartContext"
+import { Navbar } from "@/components/navbar"
+import { Footer } from "@/components/footer"
 import "./globals.css"
 
 const geistSans = Geist({
@@ -28,7 +31,11 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geistSans.variable} ${playfair.variable}`}>
       <body className="font-sans antialiased bg-background text-foreground selection:bg-primary/10">
-        {children}
+        <CartProvider>
+          <Navbar />
+          {children}
+          <Footer />
+        </CartProvider>
         <Analytics />
       </body>
     </html>

@@ -25,7 +25,7 @@ export default function Home() {
       {/* Visual Campaign Section */}
       <section className="relative h-screen overflow-hidden group">
         <img
-          src="/c5.jpg"
+          src="/c11.jpg"
           alt="Campaign"
           className="w-full h-full object-cover transition-transform duration-[2000ms] group-hover:scale-110"
         />
